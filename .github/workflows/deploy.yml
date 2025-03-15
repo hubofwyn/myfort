@@ -12,3 +12,6 @@ jobs:
       build_output_dir: 'dist'                         # deploy built files from 'dist'
       remote_target_dir: '/var/www/kidsites/wyn'      # target directory on the server
     secrets: inherit
+    permissions:
+      actions: read
+      contents: read
