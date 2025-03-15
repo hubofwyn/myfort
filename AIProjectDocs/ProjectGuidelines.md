@@ -6,6 +6,7 @@ This document outlines the structure, design principles, and guidelines for the 
 - [Project Overview](#project-overview)
 - [Design Principles](#design-principles)
 - [Code Standards](#code-standards)
+- [Build and Development Process](#build-and-development-process)
 - [Phaser Integration](#phaser-integration)
 - [Future Development](#future-development)
 - [Resources](#resources)
@@ -20,6 +21,7 @@ The "Wyn is Buff" website is a personal website for an 8-year-old named Wyn to s
 - Sections for personal information, game showcase, and other cool stuff
 - Interactive elements with JavaScript
 - Secret area with a password (hint: the password is "buff")
+- Modern build system for optimized production deployment
 
 ## Design Principles
 
@@ -33,6 +35,7 @@ The "Wyn is Buff" website is a personal website for an 8-year-old named Wyn to s
 - **Playful Interaction**: The website should feel like a game, with interactive elements that respond to user actions.
 - **Clear Navigation**: Despite the playful design, navigation should be intuitive and straightforward.
 - **Performance**: Animations and effects should be lightweight and not impact page performance.
+- **Fast Loading**: Production builds should be optimized for fast loading and rendering.
 
 ## Code Standards
 
@@ -47,31 +50,66 @@ The "Wyn is Buff" website is a personal website for an 8-year-old named Wyn to s
 - Mobile-first responsive design
 - Organized by component
 - Clear comments for complex styling
-- Prefixed animations for browser compatibility
+- Autoprefixer for browser compatibility
 
 ### JavaScript
 - Clean, well-commented code
 - Event-driven architecture
 - Function-based organization
 - Progressive enhancement (site works without JavaScript)
-- No external dependencies (vanilla JavaScript)
+- ESLint for code quality and consistency
+
+## Build and Development Process
+
+### Development Workflow
+- Use `npm run dev` for local development with hot reloading
+- Follow ESLint rules for consistent code style
+- Test across multiple browsers and devices
+
+### Build Process
+- The project uses Parcel for bundling and optimization
+- Production builds are created with `npm run build`
+- Build process includes:
+  - JavaScript bundling and minification
+  - CSS processing with PostCSS and autoprefixer
+  - HTML optimization
+  - Image optimization
+  - Asset management
+
+### Deployment Strategy
+- Build the project with `npm run build`
+- Deploy the contents of the `dist` directory to web hosting
+- Consider using CI/CD for automated deployments
+- Test the deployed site for performance and functionality
+
+### Performance Considerations
+- Keep JavaScript bundles small
+- Optimize images before adding them to the project
+- Use lazy loading for non-critical resources
+- Minimize HTTP requests
+- Leverage browser caching
 
 ## Phaser Integration
 
 The website is designed with a Phaser game engine theme, but doesn't currently include the actual Phaser library. For future integration with Phaser games:
 
 ### Adding Phaser to the Project
-1. Include the Phaser library:
-   ```html
-   <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+1. Install Phaser as a dependency:
+   ```bash
+   npm install phaser
    ```
 
-2. Create a game container in the HTML:
+2. Import Phaser in your JavaScript:
+   ```javascript
+   import Phaser from 'phaser';
+   ```
+
+3. Create a game container in the HTML:
    ```html
    <div id="game-container"></div>
    ```
 
-3. Initialize a Phaser game in script.js:
+4. Initialize a Phaser game in script.js:
    ```javascript
    const config = {
      type: Phaser.AUTO,
@@ -119,6 +157,7 @@ The website is designed to be extendable. Here are some ideas for future develop
 - **User Accounts**: Add user accounts for friends to leave comments
 - **Game Integration**: Embed playable Phaser games directly in the website
 - **Achievements System**: Add unlockable achievements for website interaction
+- **Progressive Web App**: Convert to a PWA for offline capabilities
 
 ### Design Evolution
 - **Theme Switcher**: Allow users to switch between different color themes
@@ -132,6 +171,8 @@ The website is designed to be extendable. Here are some ideas for future develop
 - [CSS Documentation](https://developer.mozilla.org/en-US/docs/Web/CSS)
 - [JavaScript Documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 - [Phaser Documentation](https://phaser.io/docs)
+- [Parcel Documentation](https://parceljs.org/docs/)
+- [ESLint Documentation](https://eslint.org/docs/user-guide/)
 
 ### Design Resources
 - [Google Fonts](https://fonts.google.com/)
@@ -142,3 +183,4 @@ The website is designed to be extendable. Here are some ideas for future develop
 - [MDN Web Docs](https://developer.mozilla.org/)
 - [Phaser Tutorials](https://phaser.io/learn)
 - [CSS-Tricks](https://css-tricks.com/)
+- [JavaScript.info](https://javascript.info/)

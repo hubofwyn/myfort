@@ -4,7 +4,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "http-server -o"
+    "start": "parcel serve index.html --open",
+    "dev": "parcel serve index.html --open",
+    "build": "parcel build index.html --public-url ./",
+    "preview": "http-server ./dist -o",
+    "clean": "rimraf dist .parcel-cache",
+    "lint": "eslint js/**/*.js",
+    "lint:fix": "eslint js/**/*.js --fix",
+    "optimize-images": "imagemin images/* --out-dir=dist/images"
   },
   "repository": {
     "type": "git",
@@ -17,8 +24,24 @@
     "url": "https://github.com/hubofwyn/myfort/issues"
   },
   "homepage": "https://github.com/hubofwyn/myfort#readme",
-  "description": "",
+  "description": "Personal website for Wyn showcasing his game development and other interests",
   "devDependencies": {
-    "http-server": "^14.1.1"
-  }
+    "@parcel/optimizer-cssnano": "^2.9.3",
+    "@parcel/optimizer-htmlnano": "^2.9.3",
+    "@parcel/transformer-css": "^2.9.3",
+    "@parcel/transformer-html": "^2.9.3",
+    "@parcel/transformer-js": "^2.9.3",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.45.0",
+    "http-server": "^14.1.1",
+    "imagemin-cli": "^7.0.0",
+    "parcel": "^2.9.3",
+    "postcss": "^8.4.27",
+    "rimraf": "^5.0.1"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
 }

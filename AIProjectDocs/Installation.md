@@ -1,17 +1,21 @@
 # Installation Guide for "Wyn is Buff" Website
 
-This document provides instructions for setting up and running the "Wyn is Buff" website.
+This document provides instructions for setting up, building, and running the "Wyn is Buff" website.
 
 ## Table of Contents
 - [Prerequisites](#prerequisites)
 - [Installation Steps](#installation-steps)
-- [Running the Website](#running-the-website)
+- [Development Workflow](#development-workflow)
+- [Build Process](#build-process)
+- [Deployment](#deployment)
 - [File Structure](#file-structure)
 - [Customization](#customization)
 
 ## Prerequisites
 
 To run this website, you need:
+- Node.js (v14.0.0 or higher)
+- npm (v6.0.0 or higher)
 - A modern web browser (Chrome, Firefox, Safari, Edge)
 - A text editor for making changes (optional)
 - Basic knowledge of HTML, CSS, and JavaScript for customization (optional)
@@ -22,52 +26,96 @@ To run this website, you need:
    - Download the ZIP file and extract it, or
    - Clone the repository using Git:
      ```
-     git clone https://github.com/wyn/wynisbuff-website.git
+     git clone https://github.com/hubofwyn/myfort.git
      ```
 
-2. **No Build Process Required**
-   - This is a static website that doesn't require any build process or dependencies.
-
-## Running the Website
-
-1. **Using the Included npm Script (Recommended)**
-   - The project includes http-server for local development
-   - Run the following command in the project directory:
+2. **Install Dependencies**
+   - Navigate to the project directory and run:
      ```
-     npm start
+     npm install
      ```
-   - This will start the server and automatically open the website in your default browser
+   - This will install all the necessary dependencies for development and building.
 
-2. **Alternative Methods**
+## Development Workflow
 
-   a. **Open the Website Locally**
-      - Navigate to the project folder
-      - Double-click on `index.html` or open it with your web browser
-      - Note: Some features may not work correctly when opened directly from the file system
+1. **Start the Development Server**
+   - Run the following command to start the development server with hot reloading:
+     ```
+     npm run dev
+     ```
+   - This will start Parcel's development server and automatically open the website in your default browser
+   - Any changes you make to the source files will automatically refresh the browser
 
-   b. **Using Python's Built-in Server**
-      - For a quick server without npm:
-        ```
-        # Python 3
-        python -m http.server
-        
-        # Python 2
-        python -m SimpleHTTPServer
-        ```
-      - Then open your browser and navigate to `http://localhost:8000`
+2. **Linting JavaScript**
+   - To check your JavaScript code for errors and style issues:
+     ```
+     npm run lint
+     ```
+   - To automatically fix linting issues:
+     ```
+     npm run lint:fix
+     ```
+
+3. **Optimizing Images**
+   - To optimize images for production:
+     ```
+     npm run optimize-images
+     ```
+
+## Build Process
+
+1. **Creating a Production Build**
+   - To create an optimized production build:
+     ```
+     npm run build
+     ```
+   - This will:
+     - Bundle and minify all JavaScript
+     - Process and optimize CSS
+     - Optimize HTML
+     - Copy and process assets
+     - Output everything to the `dist` directory
+
+2. **Previewing the Production Build**
+   - To preview the production build locally:
+     ```
+     npm run preview
+     ```
+   - This will serve the contents of the `dist` directory and open it in your browser
+
+3. **Cleaning Build Files**
+   - To remove previous build files and caches:
+     ```
+     npm run clean
+     ```
+
+## Deployment
+
+1. **Preparing for Deployment**
+   - Run `npm run build` to create an optimized production build
+   - The contents of the `dist` directory are ready for deployment
+
+2. **Deployment Options**
+   - **Web Hosting**: Upload the contents of the `dist` directory to your web hosting service
+   - **GitHub Pages**: Deploy the `dist` directory to GitHub Pages
+   - **Netlify/Vercel**: Connect your repository for automatic deployment, or manually upload the `dist` directory
 
 ## File Structure
 
 ```
-wynisbuff-website/
+myfort/
 ├── index.html          # Main HTML file
 ├── css/
 │   └── styles.css      # CSS styles for the website
 ├── js/
 │   └── script.js       # JavaScript functionality
-└── AIProjectDocs/      # Documentation folder
-    ├── Installation.md # This installation guide
-    └── ProjectGuidelines.md # Project guidelines and structure
+├── images/             # Image assets
+├── AIProjectDocs/      # Documentation folder
+├── .eslintrc.json      # ESLint configuration
+├── .parcelrc           # Parcel configuration
+├── postcss.config.js   # PostCSS configuration
+├── package.json        # Project configuration and dependencies
+└── .gitignore          # Git ignore rules
 ```
 
 ## Customization
@@ -87,6 +135,7 @@ The website is designed to be easily customizable:
 4. **Adding New Pages**
    - Create new HTML files in the root directory
    - Link to them from the main page
+   - They will be automatically processed during the build
 
 ## Version Information
 

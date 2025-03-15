@@ -1,9 +1,10 @@
 # API Usage Guide for "Wyn is Buff" Website
 
-This document provides information about the JavaScript API and functions available for extending the "Wyn is Buff" website.
+This document provides information about the JavaScript API and functions available for extending the "Wyn is Buff" website, as well as details about the build system and development tools.
 
 ## Table of Contents
 - [Overview](#overview)
+- [Build System API](#build-system-api)
 - [Core Functions](#core-functions)
 - [Animation API](#animation-api)
 - [Interactive Elements API](#interactive-elements-api)
@@ -12,7 +13,125 @@ This document provides information about the JavaScript API and functions availa
 
 ## Overview
 
-The website includes a JavaScript API that can be used to add new features, animations, and interactive elements. This document outlines the available functions and how to use them.
+The website includes a JavaScript API that can be used to add new features, animations, and interactive elements. This document outlines the available functions and how to use them, as well as information about the build system.
+
+## Build System API
+
+The project uses Parcel as a build system, which provides a zero-configuration experience for bundling and optimizing the website.
+
+### NPM Scripts
+
+The following npm scripts are available for development and building:
+
+```bash
+# Start development server with hot reloading
+npm run dev
+
+# Create an optimized production build
+npm run build
+
+# Preview the production build
+npm run preview
+
+# Clean build files and caches
+npm run clean
+
+# Lint JavaScript files
+npm run lint
+
+# Fix linting issues automatically
+npm run lint:fix
+
+# Optimize images
+npm run optimize-images
+```
+
+### Parcel Configuration
+
+The build system is configured through the `.parcelrc` file, which specifies optimizers and transformers:
+
+```json
+{
+  "extends": "@parcel/config-default",
+  "optimizers": {
+    "*.html": ["@parcel/optimizer-htmlnano"],
+    "*.css": ["@parcel/optimizer-cssnano"],
+    "*.js": ["@parcel/optimizer-terser"]
+  },
+  "reporters": ["@parcel/reporter-cli"]
+}
+```
+
+### ESLint Configuration
+
+JavaScript code quality is enforced through ESLint, configured in `.eslintrc.json`:
+
+```json
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module"
+  },
+  "rules": {
+    "indent": ["error", 2],
+    "linebreak-style": ["error", "unix"],
+    "quotes": ["error", "single"],
+    "semi": ["error", "always"],
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-unused-vars": "warn"
+  }
+}
+```
+
+### PostCSS Configuration
+
+CSS is processed with PostCSS and autoprefixer, configured in `postcss.config.js`:
+
+```javascript
+module.exports = {
+  plugins: [
+    require('autoprefixer')({
+      overrideBrowserslist: [
+        '> 1%',
+        'last 2 versions',
+        'not dead'
+      ]
+    })
+  ]
+};
+```
+
+### Adding New Dependencies
+
+To add new dependencies to the project:
+
+```bash
+# Add a production dependency
+npm install package-name
+
+# Add a development dependency
+npm install package-name --save-dev
+```
+
+### Importing Modules
+
+With the build system in place, you can use ES modules in your JavaScript:
+
+```javascript
+// Import a module
+import { someFunction } from './path/to/module.js';
+
+// Import a CSS file (Parcel will handle it)
+import '../css/component.css';
+
+// Import an image (Parcel will optimize and handle it)
+import myImage from '../images/my-image.png';
+```
 
 ## Core Functions
 
@@ -261,16 +380,13 @@ You can extend this function to add more secret areas or unlock different featur
 
 ### Phaser Game Integration
 
-To integrate a Phaser game into the website, you can use the following pattern:
+To integrate a Phaser game into the website using the build system:
 
 ```javascript
+// Import Phaser
+import Phaser from 'phaser';
+
 function initPhaserGame() {
-    // Check if Phaser is loaded
-    if (typeof Phaser === 'undefined') {
-        console.error('Phaser is not loaded. Make sure to include the Phaser library.');
-        return;
-    }
-    
     // Game configuration
     const config = {
         type: Phaser.AUTO,
@@ -289,7 +405,8 @@ function initPhaserGame() {
     
     // Preload game assets
     function preload() {
-        // this.load.image('character', 'images/character.png');
+        // Import assets using Parcel's asset handling
+        // this.load.image('character', require('../images/character.png'));
     }
     
     // Create game objects
@@ -302,6 +419,8 @@ function initPhaserGame() {
         // Update game logic
     }
 }
+
+export default initPhaserGame;
 ```
 
 ### External API Integration
@@ -337,9 +456,12 @@ function displayBlogPosts(posts) {
         container.appendChild(postElement);
     });
 }
+
+export { fetchBlogPosts, displayBlogPosts };
 ```
 
 ## Version Information
 
 - Current API Version: 1.0.0
+- Build System Version: 1.0.0
 - Last Updated: March 2025
