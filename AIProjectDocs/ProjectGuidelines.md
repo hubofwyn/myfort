@@ -77,10 +77,15 @@ The "Wyn is Buff" website is a personal website for an 8-year-old named Wyn to s
   - Asset management
 
 ### Deployment Strategy
-- Build the project with `npm run build`
-- Deploy the contents of the `dist` directory to web hosting
-- Consider using CI/CD for automated deployments
-- Test the deployed site for performance and functionality
+- **Automated Deployment Script**: Use the `deploy.sh` script for a streamlined deployment process:
+  - Automatically commits and pushes changes to the main branch
+  - Builds the project with Parcel
+  - Creates/updates a `deploy` branch with the built files
+  - Pushes the `deploy` branch to GitHub
+  - Features Phaser-themed output messages for a game-like experience
+- **GitHub Pages Deployment**: The `deploy` branch is structured for GitHub Pages hosting
+- **CI/CD Integration**: The project includes GitHub Actions workflow for automated deployments
+- **Testing**: Always test the deployed site for performance and functionality
 
 ### Performance Considerations
 - Keep JavaScript bundles small

@@ -95,7 +95,24 @@ To run this website, you need:
    - Run `npm run build` to create an optimized production build
    - The contents of the `dist` directory are ready for deployment
 
-2. **Deployment Options**
+2. **Using the Deployment Script**
+   - The project includes a Phaser-themed deployment script that automates the entire deployment process
+   - Make the script executable (if needed):
+     ```
+     chmod +x deploy.sh
+     ```
+   - Run the script:
+     ```
+     ./deploy.sh
+     ```
+   - The script will:
+     - Automatically generate a fun Phaser-themed commit message with date and time
+     - Commit and push your changes to the main branch
+     - Build the project using Parcel
+     - Create/update a `deploy` branch with the built files
+     - Push the `deploy` branch to GitHub
+
+3. **Manual Deployment Options**
    - **Web Hosting**: Upload the contents of the `dist` directory to your web hosting service
    - **GitHub Pages**: Deploy the `dist` directory to GitHub Pages
    - **Netlify/Vercel**: Connect your repository for automatic deployment, or manually upload the `dist` directory
@@ -111,6 +128,7 @@ myfort/
 │   └── script.js       # JavaScript functionality
 ├── images/             # Image assets
 ├── AIProjectDocs/      # Documentation folder
+├── deploy.sh           # Deployment script with Phaser theme
 ├── .eslintrc.json      # ESLint configuration
 ├── .parcelrc           # Parcel configuration
 ├── postcss.config.js   # PostCSS configuration
