@@ -150,11 +150,18 @@ fi
 
 phaser_success "Build completed successfully! Achievement unlocked: Master Builder"
 
-# Step 3: Switch to deploy branch
+# Step 3: Prepare for deployment
 phaser_log "LEVEL 3: Preparing deployment portal..."
 
-# Save the current branch name
+# Save the current branch name and the absolute path to the dist directory
 current_branch=$(git symbolic-ref --short HEAD)
+dist_path=$(pwd)/dist
+deployment_guide_path=$(pwd)/deployment_guide.md
+
+# Verify the dist directory exists and has content
+if [ ! -d "$dist_path" ] || [ -z "$(ls -A $dist_path)" ]; then
+  phaser_error "Build directory '$dist_path' does not exist or is empty. Build process may have failed."
+fi
 
 # Stash any changes to package files that might have been modified by npm install
 phaser_log "Stashing any changes to package files..."
@@ -191,8 +198,8 @@ phaser_success "Deploy branch prepared! Achievement unlocked: Branch Master"
 # Step 4: Copy build files to deploy branch
 phaser_log "LEVEL 4: Transferring game assets to deployment portal..."
 
-# Copy all files from dist to the root of the deploy branch
-cp -r dist/* .
+# Copy all files from dist to the root of the deploy branch using the absolute path
+cp -r $dist_path/* .
 if [ $? -ne 0 ]; then
   phaser_error "Failed to copy build files to deploy branch!"
 fi
@@ -211,8 +218,8 @@ Last deployed: $(date)
 EOL
 
 # Copy the deployment guide to the deploy branch
-if [ -f "../deployment_guide.md" ]; then
-  cp ../deployment_guide.md .
+if [ -f "$deployment_guide_path" ]; then
+  cp "$deployment_guide_path" .
   phaser_log "Deployment guide added to the deploy branch!"
 else
   phaser_warning "deployment_guide.md not found in the main branch. Creating a basic one..."
