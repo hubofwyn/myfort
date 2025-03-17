@@ -132,18 +132,17 @@ if [ -d ".parcel-cache" ]; then
 fi
 phaser_success "Clean completed!"
 
+# Ensure dependencies are installed
+phaser_log "Installing dependencies..."
+npm install
+if [ $? -ne 0 ]; then
+  phaser_warning "Dependency installation had issues, but continuing with build..."
+fi
+
 # Build the project
 phaser_log "Building the project with Parcel..."
-if command -v npx &> /dev/null; then
-  # Use npx if available
-  npx parcel build index.html --public-url ./
-elif [ -f "./node_modules/.bin/parcel" ]; then
-  # Use local parcel directly if npx is not available
-  ./node_modules/.bin/parcel build index.html --public-url ./
-else
-  # Fall back to npm run
-  npm run build
-fi
+# Use npm run build which is configured in package.json
+npm run build
 
 if [ $? -ne 0 ]; then
   phaser_error "Build failed! Check your code for errors."
