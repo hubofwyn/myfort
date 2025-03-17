@@ -123,13 +123,28 @@ phaser_success "Main branch updated successfully! Achievement unlocked: Code Pus
 phaser_log "LEVEL 2: Building game assets..."
 
 # Clean previous build files
-npm run clean
-if [ $? -ne 0 ]; then
-  phaser_warning "Clean command failed, but continuing with build..."
+phaser_log "Cleaning previous build files..."
+if [ -d "dist" ]; then
+  rm -rf dist
 fi
+if [ -d ".parcel-cache" ]; then
+  rm -rf .parcel-cache
+fi
+phaser_success "Clean completed!"
 
 # Build the project
-npm run build
+phaser_log "Building the project with Parcel..."
+if command -v npx &> /dev/null; then
+  # Use npx if available
+  npx parcel build index.html --public-url ./
+elif [ -f "./node_modules/.bin/parcel" ]; then
+  # Use local parcel directly if npx is not available
+  ./node_modules/.bin/parcel build index.html --public-url ./
+else
+  # Fall back to npm run
+  npm run build
+fi
+
 if [ $? -ne 0 ]; then
   phaser_error "Build failed! Check your code for errors."
 fi

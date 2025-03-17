@@ -65,8 +65,11 @@ The deployment script operates in several stages, presented as "levels" in the P
      - Attempts to push again
 
 2. **LEVEL 2: Building game assets**
-   - Cleans previous build files using `npm run clean`
-   - Builds the project using `npm run build`
+   - Cleans previous build files by directly removing the `dist` and `.parcel-cache` directories
+   - Builds the project using one of these methods (in order of preference):
+     - `npx parcel build` if npx is available
+     - Local parcel binary if found in node_modules
+     - `npm run build` as a fallback
    - This creates optimized files in the `dist` directory
 
 3. **LEVEL 3: Preparing deployment portal**
@@ -159,8 +162,14 @@ If you encounter issues with the deployment script:
    - Resolve any conflicts, then run the script again
 
 4. **Build Failures**:
-   - Run `npm run build` separately to see detailed error messages
-   - Fix any code issues and try again
+   - The script now tries multiple methods to run Parcel:
+     - Using npx
+     - Using the local Parcel binary
+     - Using npm run build
+   - If builds still fail:
+     - Ensure Parcel is installed: `npm install`
+     - Run `npx parcel build index.html --public-url ./` separately to see detailed error messages
+     - Fix any code issues and try again
 
 5. **Deploy Branch Issues**:
    - If the script fails during deploy branch operations, you can manually:
