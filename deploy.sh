@@ -156,11 +156,18 @@ phaser_log "LEVEL 3: Preparing deployment portal..."
 # Save the current branch name
 current_branch=$(git symbolic-ref --short HEAD)
 
+# Stash any changes to package files that might have been modified by npm install
+phaser_log "Stashing any changes to package files..."
+git add package.json package-lock.json
+git stash push -m "Stashing package files before branch switch"
+
 # Check if deploy branch exists
 if git show-ref --verify --quiet refs/heads/deploy; then
   # Deploy branch exists, switch to it
   git checkout deploy
   if [ $? -ne 0 ]; then
+    # Try to recover by applying stashed changes and exiting
+    git stash pop 2>/dev/null || true
     phaser_error "Failed to switch to deploy branch!"
   fi
   
@@ -170,6 +177,8 @@ else
   # Create and switch to a new deploy branch
   git checkout --orphan deploy
   if [ $? -ne 0 ]; then
+    # Try to recover by applying stashed changes and exiting
+    git stash pop 2>/dev/null || true
     phaser_error "Failed to create deploy branch!"
   fi
   
@@ -251,6 +260,12 @@ phaser_log "Returning to development world..."
 git checkout "$current_branch"
 if [ $? -ne 0 ]; then
   phaser_warning "Failed to switch back to $current_branch branch. Please do this manually."
+else
+  # Apply stashed changes if any
+  if git stash list | grep -q "Stashing package files before branch switch"; then
+    phaser_log "Restoring package file changes..."
+    git stash pop
+  fi
 fi
 
 # Final success message
