@@ -28,10 +28,13 @@ The project includes a Phaser-themed deployment script (`deploy.sh`) that automa
 - **Phaser-Themed Output**: Provides game-like feedback with achievements and level progression
 - **Robust Error Handling**:
   - Handles remote repository conflicts by automatically pulling changes
-  - Stashes and reapplies local changes when needed
+  - Uses temporary directory to safely store build files between branch switches
+  - Performs build verification to ensure successful builds
   - Includes comprehensive error checking and user-friendly error messages
   - Implements retry mechanisms for network-related issues
+  - Cleans up temporary resources even when errors occur
 - **State Preservation**: Returns to the original branch after deployment
+- **Deployment Documentation**: Automatically includes deployment guide in the deploy branch
 
 ### Usage
 
@@ -68,24 +71,35 @@ The deployment script operates in several stages, presented as "levels" in the P
    - Cleans previous build files by directly removing the `dist` and `.parcel-cache` directories
    - Installs dependencies using `npm install` to ensure all required packages are available
    - Builds the project using `npm run build` as configured in package.json
+   - Verifies that the build was successful and the `dist` directory contains files
    - This creates optimized files in the `dist` directory
 
-3. **LEVEL 3: Preparing deployment portal**
+3. **LEVEL 3: Creating temporary storage**
+   - Creates a temporary directory to safely store the build files
+   - Copies all build files from the `dist` directory to the temporary directory
+   - Adds the deployment guide to the temporary storage
+
+4. **LEVEL 4: Preparing deployment portal**
    - Saves the current branch name
    - Checks if the deploy branch exists
    - If it exists, switches to it and cleans all files except .git
    - If it doesn't exist, creates a new orphan branch
 
-4. **LEVEL 4: Transferring game assets to deployment portal**
-   - Copies all files from the `dist` directory to the root of the deploy branch
+5. **LEVEL 5: Transferring game assets to deployment portal**
+   - Copies all files from the temporary directory to the root of the deploy branch
+   - Cleans up the temporary directory
    - Adds a `.nojekyll` file to bypass Jekyll processing on GitHub Pages
    - Creates a README.md file with deployment information
+   - Creates or updates the deployment_guide.md file
 
-5. **LEVEL 5: Publishing game to the world**
+6. **LEVEL 6: Publishing game to the world**
    - Commits the changes to the deploy branch
    - Force pushes the deploy branch to GitHub
    - Includes retry mechanism for network-related issues
+
+7. **Returning to development world**
    - Returns to the original branch
+   - Displays final success message with deployment statistics
 
 ## Deployment Branches
 

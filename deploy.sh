@@ -148,33 +148,48 @@ if [ $? -ne 0 ]; then
   phaser_error "Build failed! Check your code for errors."
 fi
 
-phaser_success "Build completed successfully! Achievement unlocked: Master Builder"
-
-# Step 3: Prepare for deployment
-phaser_log "LEVEL 3: Preparing deployment portal..."
-
-# Save the current branch name and the absolute path to the dist directory
-current_branch=$(git symbolic-ref --short HEAD)
-dist_path=$(pwd)/dist
-deployment_guide_path=$(pwd)/deployment_guide.md
-
 # Verify the dist directory exists and has content
-if [ ! -d "$dist_path" ] || [ -z "$(ls -A $dist_path)" ]; then
-  phaser_error "Build directory '$dist_path' does not exist or is empty. Build process may have failed."
+if [ ! -d "dist" ] || [ -z "$(ls -A dist)" ]; then
+  phaser_error "Build directory 'dist' does not exist or is empty. Build process may have failed."
 fi
 
-# Stash any changes to package files that might have been modified by npm install
-phaser_log "Stashing any changes to package files..."
-git add package.json package-lock.json
-git stash push -m "Stashing package files before branch switch"
+phaser_success "Build completed successfully! Achievement unlocked: Master Builder"
+
+# Step 3: Create a temporary directory for the build files
+phaser_log "LEVEL 3: Creating temporary storage for game assets..."
+
+# Create a temporary directory
+temp_dir=$(mktemp -d)
+if [ $? -ne 0 ]; then
+  phaser_error "Failed to create temporary directory!"
+fi
+
+# Copy build files to the temporary directory
+cp -r dist/* "$temp_dir/"
+if [ $? -ne 0 ]; then
+  phaser_error "Failed to copy build files to temporary directory!"
+fi
+
+# Copy deployment guide to the temporary directory
+if [ -f "deployment_guide.md" ]; then
+  cp deployment_guide.md "$temp_dir/"
+  phaser_log "Deployment guide added to temporary storage!"
+fi
+
+phaser_success "Game assets safely stored! Achievement unlocked: Data Keeper"
+
+# Step 4: Switch to deploy branch
+phaser_log "LEVEL 4: Preparing deployment portal..."
+
+# Save the current branch name
+current_branch=$(git symbolic-ref --short HEAD)
 
 # Check if deploy branch exists
 if git show-ref --verify --quiet refs/heads/deploy; then
   # Deploy branch exists, switch to it
   git checkout deploy
   if [ $? -ne 0 ]; then
-    # Try to recover by applying stashed changes and exiting
-    git stash pop 2>/dev/null || true
+    rm -rf "$temp_dir"  # Clean up temporary directory
     phaser_error "Failed to switch to deploy branch!"
   fi
   
@@ -184,8 +199,7 @@ else
   # Create and switch to a new deploy branch
   git checkout --orphan deploy
   if [ $? -ne 0 ]; then
-    # Try to recover by applying stashed changes and exiting
-    git stash pop 2>/dev/null || true
+    rm -rf "$temp_dir"  # Clean up temporary directory
     phaser_error "Failed to create deploy branch!"
   fi
   
@@ -195,14 +209,18 @@ fi
 
 phaser_success "Deploy branch prepared! Achievement unlocked: Branch Master"
 
-# Step 4: Copy build files to deploy branch
-phaser_log "LEVEL 4: Transferring game assets to deployment portal..."
+# Step 5: Copy build files from temporary directory to deploy branch
+phaser_log "LEVEL 5: Transferring game assets to deployment portal..."
 
-# Copy all files from dist to the root of the deploy branch using the absolute path
-cp -r $dist_path/* .
+# Copy all files from temporary directory to the deploy branch
+cp -r "$temp_dir"/* .
 if [ $? -ne 0 ]; then
+  rm -rf "$temp_dir"  # Clean up temporary directory
   phaser_error "Failed to copy build files to deploy branch!"
 fi
+
+# Clean up temporary directory
+rm -rf "$temp_dir"
 
 # Add a .nojekyll file to bypass Jekyll processing on GitHub Pages
 touch .nojekyll
@@ -217,12 +235,9 @@ The source code is available in the main branch.
 Last deployed: $(date)
 EOL
 
-# Copy the deployment guide to the deploy branch
-if [ -f "$deployment_guide_path" ]; then
-  cp "$deployment_guide_path" .
-  phaser_log "Deployment guide added to the deploy branch!"
-else
-  phaser_warning "deployment_guide.md not found in the main branch. Creating a basic one..."
+# Create deployment guide if it doesn't exist
+if [ ! -f "deployment_guide.md" ]; then
+  phaser_warning "deployment_guide.md not found. Creating a basic one..."
   cat > deployment_guide.md << EOL
 # Deployment Guide for Wyn's MyFort Website
 
@@ -239,8 +254,8 @@ fi
 
 phaser_success "Game assets transferred! Achievement unlocked: Asset Manager"
 
-# Step 5: Commit and push the deploy branch
-phaser_log "LEVEL 5: Publishing game to the world..."
+# Step 6: Commit and push the deploy branch
+phaser_log "LEVEL 6: Publishing game to the world..."
 
 git add .
 git commit -m "Deploy: $commit_message"
@@ -262,17 +277,11 @@ fi
 
 phaser_success "Deploy branch pushed successfully! Achievement unlocked: Deployment Hero"
 
-# Step 6: Switch back to the original branch
+# Step 7: Switch back to the original branch
 phaser_log "Returning to development world..."
 git checkout "$current_branch"
 if [ $? -ne 0 ]; then
   phaser_warning "Failed to switch back to $current_branch branch. Please do this manually."
-else
-  # Apply stashed changes if any
-  if git stash list | grep -q "Stashing package files before branch switch"; then
-    phaser_log "Restoring package file changes..."
-    git stash pop
-  fi
 fi
 
 # Final success message
