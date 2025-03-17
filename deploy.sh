@@ -201,6 +201,26 @@ The source code is available in the main branch.
 Last deployed: $(date)
 EOL
 
+# Copy the deployment guide to the deploy branch
+if [ -f "../deployment_guide.md" ]; then
+  cp ../deployment_guide.md .
+  phaser_log "Deployment guide added to the deploy branch!"
+else
+  phaser_warning "deployment_guide.md not found in the main branch. Creating a basic one..."
+  cat > deployment_guide.md << EOL
+# Deployment Guide for Wyn's MyFort Website
+
+This is a standard static website that can be hosted on any web server without special configuration.
+
+## Structure
+- index.html - Main entry point
+- assets/ - Directory containing bundled assets (CSS, JS, images)
+- .nojekyll - File to bypass Jekyll processing on GitHub Pages
+
+Last updated: $(date)
+EOL
+fi
+
 phaser_success "Game assets transferred! Achievement unlocked: Asset Manager"
 
 # Step 5: Commit and push the deploy branch
