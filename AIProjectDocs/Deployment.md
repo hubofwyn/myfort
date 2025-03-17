@@ -26,7 +26,11 @@ The project includes a Phaser-themed deployment script (`deploy.sh`) that automa
 - **Build Process**: Automatically runs the build process using Parcel
 - **Deploy Branch Management**: Creates or updates the `deploy` branch with the built files
 - **Phaser-Themed Output**: Provides game-like feedback with achievements and level progression
-- **Error Handling**: Includes comprehensive error checking and user-friendly error messages
+- **Robust Error Handling**:
+  - Handles remote repository conflicts by automatically pulling changes
+  - Stashes and reapplies local changes when needed
+  - Includes comprehensive error checking and user-friendly error messages
+  - Implements retry mechanisms for network-related issues
 - **State Preservation**: Returns to the original branch after deployment
 
 ### Usage
@@ -53,7 +57,12 @@ The deployment script operates in several stages, presented as "levels" in the P
    - Automatically generates a fun Phaser-themed commit message with date and time
    - Adds all changes to git staging
    - Commits changes with the generated message
-   - Pushes changes to the main branch
+   - Attempts to push changes to the main branch
+   - If the push fails due to remote changes, the script:
+     - Stashes any uncommitted changes
+     - Pulls and rebases with remote changes
+     - Reapplies stashed changes
+     - Attempts to push again
 
 2. **LEVEL 2: Building game assets**
    - Cleans previous build files using `npm run clean`
@@ -74,6 +83,7 @@ The deployment script operates in several stages, presented as "levels" in the P
 5. **LEVEL 5: Publishing game to the world**
    - Commits the changes to the deploy branch
    - Force pushes the deploy branch to GitHub
+   - Includes retry mechanism for network-related issues
    - Returns to the original branch
 
 ## Deployment Branches
@@ -140,11 +150,19 @@ If you encounter issues with the deployment script:
    - Ensure you have the proper SSH keys or credentials set up
    - Check that you have write access to the repository
 
-3. **Build Failures**:
+3. **Remote Repository Conflicts**:
+   - The script now automatically handles remote conflicts by pulling changes
+   - If you still encounter issues, manually run:
+     ```bash
+     git pull --rebase origin main
+     ```
+   - Resolve any conflicts, then run the script again
+
+4. **Build Failures**:
    - Run `npm run build` separately to see detailed error messages
    - Fix any code issues and try again
 
-4. **Deploy Branch Issues**:
+5. **Deploy Branch Issues**:
    - If the script fails during deploy branch operations, you can manually:
      ```bash
      git checkout main
@@ -154,6 +172,11 @@ If you encounter issues with the deployment script:
      ```
      Then run the script again
 
-5. **GitHub Pages Not Updating**:
+6. **Network-Related Push Failures**:
+   - The script now includes retry mechanisms for network issues
+   - If pushes consistently fail, check your internet connection
+   - Verify that GitHub is accessible from your network
+
+7. **GitHub Pages Not Updating**:
    - GitHub Pages may take a few minutes to reflect changes
    - Check the GitHub repository settings to ensure GitHub Pages is enabled and using the correct branch

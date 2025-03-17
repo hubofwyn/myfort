@@ -94,9 +94,27 @@ if [ $? -ne 0 ]; then
   phaser_warning "No changes to commit or commit failed. Continuing anyway..."
 fi
 
-git push origin main
-if [ $? -ne 0 ]; then
-  phaser_error "Failed to push to main branch! Check your connection and permissions."
+# Try to push, if it fails, pull and then push
+if ! git push origin main; then
+  phaser_warning "Remote has changes. Pulling changes first..."
+  
+  # Stash any uncommitted changes (just in case)
+  git stash
+  
+  # Pull changes from remote
+  if ! git pull --rebase origin main; then
+    phaser_error "Failed to pull changes from remote. Please resolve conflicts manually."
+  fi
+  
+  # Apply stashed changes (if any)
+  git stash pop 2>/dev/null || true
+  
+  # Try pushing again
+  if ! git push origin main; then
+    phaser_error "Failed to push to main branch! Check your connection and permissions."
+  fi
+  
+  phaser_success "Changes merged and pushed successfully!"
 fi
 
 phaser_success "Main branch updated successfully! Achievement unlocked: Code Pusher"
@@ -180,9 +198,16 @@ if [ $? -ne 0 ]; then
   phaser_error "Failed to commit to deploy branch!"
 fi
 
-git push -f origin deploy
-if [ $? -ne 0 ]; then
-  phaser_error "Failed to push deploy branch! Check your connection and permissions."
+# Force push to deploy branch with error handling
+if ! git push -f origin deploy; then
+  phaser_warning "Failed to push deploy branch on first attempt. Retrying..."
+  
+  # Wait a moment and try again
+  sleep 2
+  
+  if ! git push -f origin deploy; then
+    phaser_error "Failed to push deploy branch! Check your connection and permissions."
+  fi
 fi
 
 phaser_success "Deploy branch pushed successfully! Achievement unlocked: Deployment Hero"
